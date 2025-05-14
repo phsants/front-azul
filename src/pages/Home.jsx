@@ -1,48 +1,29 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import styles from "./Home.module.css";
 
-function Home() {
-  function logout() {
-      localStorage.removeItem("token"); // Apaga o token
-      window.location.href = "/login";   // Redireciona para login
-  }
+const Home = () => {
+  const navigate = useNavigate();
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>Bem-vindo!</h1>
-      <p style={styles.text}>Você está logado e acessou a área protegida.</p>
-      <button onClick={logout} style={styles.button}>
-        Sair
-      </button>
+    <div className={styles.container}>
+      <h1 className={styles.title}>Painel de Controle</h1>
+      <div className={styles.grid}>
+        <div className={styles.card} onClick={() => navigate("/dashboard")}>
+          <h2>📊 Dashboard</h2>
+          <p>Visualizar relatórios e gráficos das pesquisas</p>
+        </div>
+        <div className={styles.card} onClick={() => navigate("/pesquisas")}>
+          <h2>📝 Pesquisas</h2>
+          <p>Cadastrar, editar e visualizar pesquisas</p>
+        </div>
+        <div className={styles.card} onClick={() => navigate("/agendamentos")}>
+          <h2>🕒 Agendamentos</h2>
+          <p>Gerenciar e configurar agendamentos de pesquisas</p>
+        </div>
+      </div>
     </div>
   );
-}
-
-const styles = {
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    height: "100vh",
-    backgroundColor: "#f8f9fa",
-  },
-  title: {
-    fontSize: "32px",
-    marginBottom: "16px",
-  },
-  text: {
-    fontSize: "18px",
-    marginBottom: "24px",
-  },
-  button: {
-    padding: "10px 20px",
-    backgroundColor: "#dc3545",
-    color: "#fff",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontSize: "16px",
-  },
 };
 
 export default Home;

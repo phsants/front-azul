@@ -17,9 +17,9 @@ function Login() {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        localStorage.setItem("token", data.token); // salva o token no navegador
+        localStorage.setItem("token", data.token);
         alert("Login realizado com sucesso!");
-        navigate("/pesquisa");
+        navigate("/", { replace: true });
       } else {
         alert(data.error || "Usuário ou senha incorretos");
       }
