@@ -82,23 +82,34 @@ function FormularioPesquisa() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) {
-      alert("Preencha todos os campos obrigatórios.");
-      return;
-    }
+      e.preventDefault();
+      if (!validateForm()) {
+        alert("Preencha todos os campos obrigatórios.");
+        return;
+      }
 
-    try {
-      await apiFetch("http://localhost:5000/api/pesquisas", {
-        method: "POST",
-        body: JSON.stringify(form),
-      });
+      const token = localStorage.getItem("token"); // <-- pegando o token aqui
 
-      alert("Pesquisa salva com sucesso!");
-    } catch (error) {
-      console.error("Erro ao enviar pesquisa:", error);
-      alert(error.message || "Erro ao enviar pesquisa");
-    }
+      if (!token) {
+        alert("Sessão expirada, faça login novamente.");
+        return;
+      }
+
+      try {
+        await apiFetch("http://localhost:5000/api/pesquisa", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` // <-- token aplicado corretamente
+          },
+          body: JSON.stringify(form),
+        });
+
+        alert("Pesquisa salva com sucesso!");
+      } catch (error) {
+        console.error("Erro ao enviar pesquisa:", error);
+        alert(error.message || "Erro ao enviar pesquisa");
+      }
   };
 
   return (

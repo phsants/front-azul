@@ -13,7 +13,7 @@ const Home = () => {
           <h2>📊 Dashboard</h2>
           <p>Visualizar relatórios e gráficos das pesquisas</p>
         </div>
-        <div className={styles.card} onClick={() => navigate("/pesquisas")}>
+        <div className={styles.card} onClick={() => navigate("/pesquisa")}>
           <h2>📝 Pesquisas</h2>
           <p>Cadastrar, editar e visualizar pesquisas</p>
         </div>

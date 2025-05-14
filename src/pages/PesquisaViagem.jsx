@@ -26,8 +26,8 @@ function PesquisaViagem() {
 
 
   const handleLogout = () => {
-    localStorage.removeItem("userId");
-    navigate("/");
+    localStorage.removeItem("token");
+    navigate("/login");
   };
 
   return (
