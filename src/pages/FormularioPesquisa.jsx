@@ -89,7 +89,7 @@ function FormularioPesquisa() {
     }
 
     try {
-      await apiFetch("https://api-pacotes-manus.onrender.com/api/pesquisa", {
+      await apiFetch("http://localhost:5000/api/pesquisas", {
         method: "POST",
         body: JSON.stringify(form),
       });

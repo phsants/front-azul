@@ -16,7 +16,7 @@ function CamposDinamicos({ form, setForm, field, label }) {
             throw new Error("Usuário não autenticado");
           }
 
-          const data = await apiFetch("https://api-pacotes-manus.onrender.com/api/cidades");
+          const data = await apiFetch("http://localhost:5000/api/cidades");
           setCidades(data);
           setOpcoesCidades(
             data.map((cidade) => ({
