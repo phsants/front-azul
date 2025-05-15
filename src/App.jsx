@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Pesquisa from "./pages/PesquisaViagem";
 import RotaProtegida from "./pages/RotaProtegida";
 import Dashboard from "./pages/Dashboard";
+import Agendamentos from "./pages/agendamentos";
 
 function App() {
   return (
@@ -36,7 +37,14 @@ function App() {
           </RotaProtegida>
         }
       />
-
+      <Route
+        path="/agendamentos"
+        element={
+        <RotaProtegida>
+          <Agendamentos />
+        </RotaProtegida>
+        }
+      />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );

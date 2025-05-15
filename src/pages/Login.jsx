@@ -1,12 +1,17 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Spinner } from '@/components/ui/spinner';
+import { Toast } from '@/components/ui/toast';
 
 function Login() {
   const navigate = useNavigate();
   const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState({ message: '', type: 'success', visible: false });
 
   const handleLogin = async () => {
+    setLoading(true); // Mostra spinner
     try {
       const response = await fetch("http://localhost:5000/api/login", {
         method: "POST",
@@ -18,14 +23,21 @@ function Login() {
 
       if (response.ok && data.success) {
         localStorage.setItem("token", data.token);
-        alert("Login realizado com sucesso!");
-        navigate("/", { replace: true });
+        setToast({ message: "Login realizado com sucesso!", type: "success", visible: true });
+
+        // Espera 2 segundos antes de navegar
+        setTimeout(() => {
+          setToast({ message: '', type: 'success', visible: false });
+          navigate("/", { replace: true });
+        }, 2000);
       } else {
-        alert(data.error || "Usuário ou senha incorretos");
+        setToast({ message: data.error || "Usuário ou senha incorretos", type: "error", visible: true });
       }
     } catch (error) {
       console.error("Erro ao fazer login:", error);
-      alert("Erro ao conectar no servidor");
+      setToast({ message: "Erro ao conectar no servidor", type: "error", visible: true });
+    } finally {
+      setLoading(false); // Oculta spinner
     }
   };
 
@@ -47,11 +59,10 @@ function Login() {
           onChange={(e) => setSenha(e.target.value)}
           style={styles.input}
         />
-        <button style={styles.button} onClick={handleLogin}>
-          Entrar
+        <button style={styles.button} onClick={handleLogin} disabled={loading}>
+          {loading ? 'Entrando...' : 'Entrar'}
         </button>
 
-        {/* Botão de Cadastro */}
         <button style={styles.registerButton} onClick={() => navigate("/cadastro")}>
           Criar Conta
         </button>
@@ -60,6 +71,34 @@ function Login() {
       <div style={styles.imageContainer}>
         <img src="/images/logograndeVerde.jpeg" alt="Viagem" style={styles.image} />
       </div>
+
+      {/* Toast fixo */}
+      {toast.visible && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          duration={3000}
+          onClose={() => setToast({ ...toast, visible: false })}
+        />
+      )}
+
+      {/* Spinner centralizado flutuante */}
+      {loading && (
+        <div style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          background: "rgba(255,255,255,0.5)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 9999,
+        }}>
+          <Spinner size={10} />
+        </div>
+      )}
     </div>
   );
 }
