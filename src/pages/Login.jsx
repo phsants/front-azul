@@ -23,6 +23,7 @@ function Login() {
 
       if (response.ok && data.success) {
         localStorage.setItem("token", data.token);
+        localStorage.setItem("username", usuario);
         setToast({ message: "Login realizado com sucesso!", type: "success", visible: true });
 
         // Espera 2 segundos antes de navegar
