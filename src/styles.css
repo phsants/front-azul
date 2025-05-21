@@ -1,7 +1,4 @@
-body {
-  display: flex;
-  justify-content: center; /* Centraliza horizontalmente */
-  align-items: center; /* Centraliza verticalmente */
+body { /* Centraliza verticalmente */
   min-height: 100vh; /* Ocupa 100% da altura da tela */
   margin: 0; /* Remove margens padrão */
   background-color: #f5f5f5; /* Cor de fundo opcional */
