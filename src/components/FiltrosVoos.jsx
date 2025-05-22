@@ -1,181 +1,221 @@
-import React from "react";
+import React, { useState } from 'react';
+import { cidades, aeroportos, companhiasAereas } from '../data/mockData';
+import { Search, X, Filter } from 'lucide-react';
 
-export function FiltrosVoos({ filtros, atualizarFiltro, voos }) {
-  const opcoesUnicas = (chave) =>
-    [...new Set(voos.map((v) => v[chave]).filter(Boolean))];
+/**
+ * Componente para filtros dinâmicos de voos e pacotes
+ * @param {Object} props - Propriedades do componente
+ * @param {Object} props.filtros - Estado atual dos filtros
+ * @param {Function} props.atualizarFiltro - Função para atualizar um filtro específico
+ * @param {Function} props.limparFiltros - Função para limpar todos os filtros
+ * @param {Function} props.aplicarFiltros - Função para aplicar os filtros
+ * @returns {JSX.Element} Componente FiltrosVoos
+ */
+const FiltrosVoos = ({ filtros, atualizarFiltro, limparFiltros, aplicarFiltros }) => {
+  const [mostrarFiltrosAvancados, setMostrarFiltrosAvancados] = useState(false);
 
   return (
-    <div className="flex gap-4 flex-wrap ">
-      {/* Origem */}
-      <div className="bg-white rounded-xl shadow p-4 flex-1 min-w-[200px]">
-        <label className="block text-sm font-medium text-gray-700">Origem</label>
-        <select
-          className="mt-1 block w-full border rounded p-2"
-          onChange={(e) => atualizarFiltro("origem", e.target.value)}
-          value={filtros.origem || ""}
+    <div className="card mb-6">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg font-semibold">Filtros de Pesquisa</h2>
+        <button 
+          onClick={() => setMostrarFiltrosAvancados(!mostrarFiltrosAvancados)}
+          className="flex items-center text-primary hover:text-blue-700 transition-colors"
         >
-          <option value="">Todas</option>
-          {opcoesUnicas("origem").map((o) => (
-            <option key={o} value={o}>
-              {o}
-            </option>
-          ))}
-        </select>
+          <Filter className="w-4 h-4 mr-1" />
+          {mostrarFiltrosAvancados ? 'Ocultar filtros avançados' : 'Mostrar filtros avançados'}
+        </button>
       </div>
 
-      {/* Destino */}
-      <div className="bg-white rounded-xl shadow p-4 flex-1 min-w-[200px]">
-        <label className="block text-sm font-medium text-gray-700">Destino</label>
-        <select
-          className="mt-1 block w-full border rounded p-2"
-          onChange={(e) => atualizarFiltro("destino", e.target.value)}
-          value={filtros.destino || ""}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        {/* Filtro de Origem */}
+        <div>
+          <label htmlFor="origem" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Origem
+          </label>
+          <select
+            id="origem"
+            className="select w-full"
+            value={filtros.origem}
+            onChange={(e) => atualizarFiltro('origem', e.target.value)}
+          >
+            <option value="">Todas as origens</option>
+            {cidades.map((cidade) => (
+              <option key={cidade.id} value={cidade.id}>
+                {cidade.nome} ({cidade.codigo})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Filtro de Destino */}
+        <div>
+          <label htmlFor="destino" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Destino
+          </label>
+          <select
+            id="destino"
+            className="select w-full"
+            value={filtros.destino}
+            onChange={(e) => atualizarFiltro('destino', e.target.value)}
+          >
+            <option value="">Todos os destinos</option>
+            {cidades.map((cidade) => (
+              <option key={cidade.id} value={cidade.id}>
+                {cidade.nome} ({cidade.codigo})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Filtro de Data de Ida */}
+        <div>
+          <label htmlFor="dataIda" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Data de Ida
+          </label>
+          <input
+            type="date"
+            id="dataIda"
+            className="input w-full"
+            value={filtros.dataIda}
+            onChange={(e) => atualizarFiltro('dataIda', e.target.value)}
+          />
+        </div>
+
+        {/* Filtro de Companhia Aérea */}
+        <div>
+          <label htmlFor="companhia" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Companhia Aérea
+          </label>
+          <select
+            id="companhia"
+            className="select w-full"
+            value={filtros.companhia}
+            onChange={(e) => atualizarFiltro('companhia', e.target.value)}
+          >
+            <option value="">Todas as companhias</option>
+            {companhiasAereas.map((companhia) => (
+              <option key={companhia.id} value={companhia.id}>
+                {companhia.nome} ({companhia.codigo})
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Filtros avançados */}
+      {mostrarFiltrosAvancados && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 border-t pt-4 border-gray-200 dark:border-gray-700">
+          {/* Filtro de Preço Mínimo */}
+          <div>
+            <label htmlFor="precoMin" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Preço Mínimo (R$)
+            </label>
+            <input
+              type="number"
+              id="precoMin"
+              className="input w-full"
+              value={filtros.precoMin}
+              onChange={(e) => atualizarFiltro('precoMin', e.target.value)}
+              min="0"
+              step="50"
+            />
+          </div>
+
+          {/* Filtro de Preço Máximo */}
+          <div>
+            <label htmlFor="precoMax" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Preço Máximo (R$)
+            </label>
+            <input
+              type="number"
+              id="precoMax"
+              className="input w-full"
+              value={filtros.precoMax}
+              onChange={(e) => atualizarFiltro('precoMax', e.target.value)}
+              min="0"
+              step="50"
+            />
+          </div>
+
+          {/* Filtro de Conexões */}
+          <div>
+            <label htmlFor="conexoes" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Conexões
+            </label>
+            <select
+              id="conexoes"
+              className="select w-full"
+              value={filtros.conexoes}
+              onChange={(e) => atualizarFiltro('conexoes', e.target.value)}
+            >
+              <option value="todos">Todos os voos</option>
+              <option value="direto">Apenas voos diretos</option>
+              <option value="conexao">Apenas voos com conexão</option>
+            </select>
+          </div>
+
+          {/* Filtro de Hotel */}
+          <div className="flex flex-col">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Hospedagem
+            </label>
+            <div className="flex items-center mt-2">
+              <input
+                type="checkbox"
+                id="hotel"
+                className="mr-2 h-4 w-4"
+                checked={filtros.hotel}
+                onChange={(e) => atualizarFiltro('hotel', e.target.checked)}
+              />
+              <label htmlFor="hotel" className="text-sm text-gray-700 dark:text-gray-300">
+                Incluir hotel
+              </label>
+            </div>
+          </div>
+
+          {/* Filtro de Categoria de Hotel (visível apenas se hotel estiver marcado) */}
+          {filtros.hotel && (
+            <div>
+              <label htmlFor="categoriaHotel" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Categoria do Hotel
+              </label>
+              <select
+                id="categoriaHotel"
+                className="select w-full"
+                value={filtros.categoriaHotel}
+                onChange={(e) => atualizarFiltro('categoriaHotel', e.target.value)}
+              >
+                <option value="">Todas as categorias</option>
+                <option value="5">5 estrelas</option>
+                <option value="4">4 estrelas</option>
+                <option value="3">3 estrelas</option>
+                <option value="2">2 estrelas</option>
+                <option value="1">1 estrela</option>
+              </select>
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="flex justify-end space-x-2">
+        <button
+          onClick={limparFiltros}
+          className="flex items-center px-4 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-700 transition-colors"
         >
-          <option value="">Todos</option>
-          {opcoesUnicas("destino").map((d) => (
-            <option key={d} value={d}>
-              {d}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Companhia */}
-      <div className="bg-white rounded-xl shadow p-4 flex-1 min-w-[200px]">
-        <label className="block text-sm font-medium text-gray-700">Companhia</label>
-        <select
-          className="mt-1 block w-full border rounded p-2"
-          onChange={(e) => atualizarFiltro("companhia", e.target.value)}
-          value={filtros.companhia || ""}
+          <X className="w-4 h-4 mr-1" />
+          Limpar
+        </button>
+        <button
+          onClick={aplicarFiltros}
+          className="btn-primary flex items-center"
         >
-          <option value="">Todas</option>
-          {opcoesUnicas("companhia").map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Tipo de Voo */}
-      <div className="bg-white rounded-xl shadow p-4 flex-1 min-w-[200px]">
-        <label className="block text-sm font-medium text-gray-700">Tipo de Voo</label>
-        <select
-          className="mt-1 block w-full border rounded p-2"
-          onChange={(e) => atualizarFiltro("tipo_voo", e.target.value)}
-          value={filtros.tipo_voo || ""}
-        >
-          <option value="">Todos</option>
-          {opcoesUnicas("tipo_voo").map((t) => (
-            <option key={t} value={t}>
-              {t}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Cliente */}
-      <div className="bg-white rounded-xl shadow p-4 flex-1 min-w-[200px]">
-        <label className="block text-sm font-medium text-gray-700">Cliente</label>
-        <select
-          className="mt-1 block w-full border rounded p-2"
-          onChange={(e) => atualizarFiltro("cliente_nome", e.target.value)}
-          value={filtros.cliente_nome || ""}
-        >
-          <option value="">Todos</option>
-          {opcoesUnicas("cliente_nome").map((t) => (
-            <option key={t} value={t}>
-              {t}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Categoria do Hotel */}
-      <div className="bg-white rounded-xl shadow p-4 flex-1 min-w-[200px]">
-        <label className="block text-sm font-medium text-gray-700">Categoria Hotel</label>
-        <select
-          className="mt-1 block w-full border rounded p-2"
-          onChange={(e) => atualizarFiltro("categoria_hotel", e.target.value)}
-          value={filtros.categoria_hotel || ""}
-        >
-          <option value="">Todas</option>
-          <option value="5">5 estrelas</option>
-          <option value="4">4 estrelas</option>
-          <option value="3">3 estrelas</option>
-        </select>
-      </div>
-
-      {/* Conexões */}
-      <div className="bg-white rounded-xl shadow p-4 flex-1 min-w-[200px]">
-        <label className="block text-sm font-medium text-gray-700">Conexões</label>
-        <select
-          className="mt-1 block w-full border rounded p-2"
-          onChange={(e) => atualizarFiltro("qtd_conexoes", e.target.value)}
-          value={filtros.qtd_conexoes || ""}
-        >
-          <option value="">Todas</option>
-          <option value="0">Direto</option>
-          <option value="1">1 conexão</option>
-          <option value="2">2 ou mais conexões</option>
-        </select>
-      </div>
-
-      {/* Data de Ida */}
-      <div className="bg-white rounded-xl shadow p-4 flex-1 min-w-[200px]">
-        <label className="block text-sm font-medium text-gray-700">Data Ida</label>
-        <input
-          type="date"
-          className="mt-1 block w-full border rounded p-2"
-          value={filtros.data_ida || ""}
-          onChange={(e) => atualizarFiltro("data_ida", e.target.value)}
-        />
-      </div>
-
-      {/* Data de Volta */}
-      <div className="bg-white rounded-xl shadow p-4 flex-1 min-w-[200px]">
-        <label className="block text-sm font-medium text-gray-700">Data Volta</label>
-        <input
-          type="date"
-          className="mt-1 block w-full border rounded p-2"
-          value={filtros.data_volta || ""}
-          onChange={(e) => atualizarFiltro("data_volta", e.target.value)}
-        />
-      </div>
-
-      {/* Preço Mínimo */}
-      <div className="bg-white rounded-xl shadow p-4 flex-1 min-w-[200px]">
-        <label className="block text-sm font-medium text-gray-700">Preço Mínimo (R$)</label>
-        <input
-          type="number"
-          placeholder="Ex: 1000"
-          className="mt-1 block w-full border rounded p-2"
-          value={filtros.precoMin || ""}
-          onChange={(e) =>
-            atualizarFiltro(
-              "precoMin",
-              e.target.value ? parseInt(e.target.value) : null
-            )
-          }
-        />
-      </div>
-
-      {/* Preço Máximo */}
-      <div className="bg-white rounded-xl shadow p-4 flex-1 min-w-[200px]">
-        <label className="block text-sm font-medium text-gray-700">Preço Máximo (R$)</label>
-        <input
-          type="number"
-          placeholder="Ex: 5000"
-          className="mt-1 block w-full border rounded p-2"
-          value={filtros.precoMax || ""}
-          onChange={(e) =>
-            atualizarFiltro(
-              "precoMax",
-              e.target.value ? parseInt(e.target.value) : null
-            )
-          }
-        />
+          <Search className="w-4 h-4 mr-1" />
+          Aplicar Filtros
+        </button>
       </div>
     </div>
   );
-}
+};
+
+export default FiltrosVoos;

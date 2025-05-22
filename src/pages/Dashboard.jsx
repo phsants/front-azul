@@ -1,122 +1,142 @@
-import React, { useEffect, useState } from "react";
-import { useFiltroVoos } from "../hooks/useFiltroVoos";
-import { FiltrosVoos } from "../components/FiltrosVoos";
-import { GraficoPrecoVoos } from "../components/GraficoPrecoVoos";
-import { TabelaVoos } from "../components/TabelaVoos";
-import { ModalDetalhes } from "../components/ModalDetalhes";
-import { GraficosDashboard } from "../components/GraficosDashboard";
+import React, { useState } from 'react';
+import { kpis } from '../data/mockData';
+import CardIndicador from '../components/CardIndicador';
+import FiltrosVoos from '../components/FiltrosVoos';
+import GraficosDashboard from '../components/GraficosDashboard';
+import TabelaVoos from '../components/TabelaVoos';
+import ModalDetalhes from '../components/ModalDetalhes';
+import useFiltroVoos from '../hooks/useFiltroVoos';
+import { motion } from 'framer-motion';
 
-export default function Dashboard() {
-  const [voos, setVoos] = useState([]);
-  const { filtros, atualizarFiltro, dadosFiltrados } = useFiltroVoos(voos);
-  const [dadosSelecionados, setDadosSelecionados] = useState(null);
+/**
+ * Página principal do dashboard com KPIs, gráficos, tabelas e filtros
+ * @returns {JSX.Element} Componente Dashboard
+ */
+const Dashboard = () => {
+  const { filtros, resultados, carregando, atualizarFiltro, limparFiltros, aplicarFiltros } = useFiltroVoos();
+  const [vooSelecionado, setVooSelecionado] = useState(null);
+  const [modalAberto, setModalAberto] = useState(false);
 
-  useEffect(() => {
-    const fetchVoos = async () => {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        window.location.href = "/login";
-        return;
-      }
-
-      try {
-        const response = await fetch("http://localhost:5000/api/voos", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          setVoos(data);
-        } else {
-          alert(data.error || "Erro ao buscar voos.");
-        }
-      } catch (error) {
-        alert("Erro de comunicação com o servidor.");
-      }
-    };
-
-    fetchVoos();
-  }, []);
-
-  // 👉 Função para abrir modal ao clicar na linha
-  const handleRowClick = (dados) => {
-    setDadosSelecionados(dados);
+  // Função para abrir o modal de detalhes
+  const abrirModalDetalhes = (voo) => {
+    setVooSelecionado(voo);
+    setModalAberto(true);
   };
 
-  // 👉 Indicadores
-  const totalVoos = dadosFiltrados.length;
-  const precos = dadosFiltrados.map((v) => v.preco).filter(Boolean);
-  const mediaPreco = precos.length
-    ? (precos.reduce((a, b) => a + b, 0) / precos.length).toFixed(2)
-    : 0;
-  const menorPreco = precos.length ? Math.min(...precos) : 0;
-  const destinoMaisBuscado =
-    dadosFiltrados.reduce((acc, v) => {
-      acc[v.destino] = (acc[v.destino] || 0) + 1;
-      return acc;
-    }, {});
-  const destinoPopular = Object.entries(destinoMaisBuscado).sort(
-    (a, b) => b[1] - a[1]
-  )[0]?.[0] || "N/A";
+  // Função para fechar o modal de detalhes
+  const fecharModalDetalhes = () => {
+    setModalAberto(false);
+  };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 space-y-6">
-      <h1 className="text-2xl font-bold text-blue-600">Dashboard de Voos</h1>
-
-      {/* 🔥 Cards de Indicadores */}
-      <div className="flex gap-4 flex-wrap">
-        <div className="bg-white rounded-xl shadow p-4 flex-1 min-w-[180px]">
-          <h2 className="text-sm text-gray-500">Total de Voos</h2>
-          <p className="text-2xl font-semibold text-blue-600">{totalVoos}</p>
-        </div>
-        <div className="bg-white rounded-xl shadow p-4 flex-1 min-w-[180px]">
-          <h2 className="text-sm text-gray-500">Média de Preço</h2>
-          <p className="text-2xl font-semibold text-green-600">
-            R$ {mediaPreco}
-          </p>
-        </div>
-        <div className="bg-white rounded-xl shadow p-4 flex-1 min-w-[180px]">
-          <h2 className="text-sm text-gray-500">Menor Preço</h2>
-          <p className="text-2xl font-semibold text-green-600">
-            R$ {menorPreco}
-          </p>
-        </div>
-        <div className="bg-white rounded-xl shadow p-4 flex-1 min-w-[180px]">
-          <h2 className="text-sm text-gray-500">Destino + Buscado</h2>
-          <p className="text-xl font-semibold text-blue-600">
-            {destinoPopular}
-          </p>
-        </div>
+    <div className="space-y-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+        <motion.h1 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="text-2xl font-bold text-gray-900 dark:text-white mb-4 md:mb-0"
+        >
+          Dashboard de Viagens
+        </motion.h1>
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="flex space-x-2"
+        >
+          <select 
+            className="select"
+            defaultValue="hoje"
+          >
+            <option value="hoje">Hoje</option>
+            <option value="semana">Última semana</option>
+            <option value="mes">Último mês</option>
+            <option value="trimestre">Último trimestre</option>
+            <option value="ano">Último ano</option>
+          </select>
+          <button className="btn-primary">
+            Exportar
+          </button>
+        </motion.div>
       </div>
 
-      <div className="mt-8">
-          {/* 🔥 Filtros */}
-          <FiltrosVoos
-            filtros={filtros}
-            atualizarFiltro={atualizarFiltro}
-            voos={voos}
+      {/* KPIs */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+      >
+        {kpis.map((kpi) => (
+          <CardIndicador
+            key={kpi.id}
+            titulo={kpi.titulo}
+            valor={kpi.valor}
+            variacao={kpi.variacao}
+            positivo={kpi.positivo}
+            icone={kpi.icone}
           />
-      </div>
+        ))}
+      </motion.div>
 
-      {/* 🔥 Gráficos */}
-      <GraficoPrecoVoos dados={dadosFiltrados} />
-      <GraficosDashboard dados={dadosFiltrados} />
+      {/* Filtros */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        <FiltrosVoos
+          filtros={filtros}
+          atualizarFiltro={atualizarFiltro}
+          limparFiltros={limparFiltros}
+          aplicarFiltros={aplicarFiltros}
+        />
+      </motion.div>
 
-      {/* 🔥 Tabela */}
-      <TabelaVoos dados={dadosFiltrados} onRowClick={handleRowClick} />
+      {/* Gráficos */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+      >
+        <div className="card p-4">
+          <GraficosDashboard tipo="preco" />
+        </div>
+        <div className="card p-4">
+          <GraficosDashboard tipo="volume" />
+        </div>
+        <div className="card p-4">
+          <GraficosDashboard tipo="ocupacao" />
+        </div>
+        <div className="card p-4">
+          <GraficosDashboard tipo="categorias" />
+        </div>
+      </motion.div>
 
-      {/* 🔥 Modal de Detalhes */}
+      {/* Tabela de Voos */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+      >
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+          Voos Disponíveis
+        </h2>
+        <TabelaVoos
+          voos={resultados}
+          carregando={carregando}
+          onVerDetalhes={abrirModalDetalhes}
+        />
+      </motion.div>
+
+      {/* Modal de Detalhes */}
       <ModalDetalhes
-        aberto={!!dadosSelecionados}
-        onClose={() => setDadosSelecionados(null)}
-        dados={dadosSelecionados}
+        isOpen={modalAberto}
+        onClose={fecharModalDetalhes}
+        voo={vooSelecionado}
       />
     </div>
   );
-}
+};
+
+export default Dashboard;
