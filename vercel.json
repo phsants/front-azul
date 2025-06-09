@@ -3,13 +3,9 @@
   "outputDirectory": "dist",
   "installCommand": "npm ci",
   "framework": "vite",
-  "functions": {
-    "maxDuration": 30
-  },
   "build": {
     "env": {
       "NODE_OPTIONS": "--max-old-space-size=4096"
     }
   }
 }
-
