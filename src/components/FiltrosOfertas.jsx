@@ -54,7 +54,7 @@ const FiltrosOfertas = ({ onFiltrar, filtros, loading = false }) => {
 
   // Converter string de data para objeto dayjs
   const converterStringParaData = (dataInput) => {
-    if (!dataString) return null;
+    if (!dataInput) return null;
     const [dia, mes, ano] = dataInput.split('/');
     return dayjs(`${ano}-${mes}-${dia}`);
   };
@@ -538,6 +538,7 @@ const FiltrosOfertas = ({ onFiltrar, filtros, loading = false }) => {
         filtroAtivo.conexoes ||
         filtroAtivo.dataInicio ||
         filtroAtivo.dataFim ||
+        filtroAtivo.mesAnoIda ||
         precoMinimo > 0 ||
         precoMaximo < 50000) && (
         <Box sx={{ mt: 3 }}>
