@@ -21,6 +21,8 @@ import {
   Flight as FlightIcon,
   Hotel as HotelIcon,
   AttachMoney as AttachMoneyIcon,
+  CalendarMonth as CalendarMonthIcon,
+  Event as EventIcon,
 } from '@mui/icons-material';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -35,7 +37,9 @@ const FiltrosOfertas = ({ onFiltrar, filtros, loading = false }) => {
     faixaPreco: [0, 50000], // Valor inicial para o slider
     conexoes: '',
     dataInicio: null,
-    dataFim: null
+    dataFim: null,
+    mesAnoIda: null,     // Seletor de mês/ano
+    dataIda: null
   });
 
   // Estado para os inputs de preço
@@ -110,6 +114,29 @@ const FiltrosOfertas = ({ onFiltrar, filtros, loading = false }) => {
     }
   }, [filtroAtivo.origem, filtroAtivo.destino, filtros]);
 
+  // Lógica para restringir Data de Ida baseada no Mês/Ano selecionado
+  useEffect(() => {
+    if (filtroAtivo.mesAnoIda && filtroAtivo.dataIda) {
+      const mesAnoData = filtroAtivo.dataIda.format('YYYY-MM');
+      const mesAnoSelecionado = filtroAtivo.mesAnoIda.format('YYYY-MM');
+
+      if (mesAnoData !== mesAnoSelecionado) {
+        setFiltroAtivo(prev => ({ ...prev, dataIda: null }));
+      }
+    }
+  }, [filtroAtivo.mesAnoIda]);
+
+
+  // Função para determinar se uma data deve ser desabilitada no DatePicker de Data de Ida
+  const shouldDisableDataIda = (date) => {
+    if (!filtroAtivo.mesAnoIda) return false; // Se não há mês/ano selecionado, todas as datas são válidas
+
+    const mesAnoSelecionado = filtroAtivo.mesAnoIda.format('YYYY-MM');
+    const mesAnoData = dayjs(date).format('YYYY-MM');
+
+    return mesAnoData !== mesAnoSelecionado; // Desabilitar datas fora do mês/ano selecionado
+  };
+
   const handleChange = (campo, valor) => {
     console.log(`Alterando ${campo} para:`, valor);
     setFiltroAtivo(prev => ({
@@ -152,6 +179,9 @@ const FiltrosOfertas = ({ onFiltrar, filtros, loading = false }) => {
       // Converter datas para string no formato esperado pela API/mock
       dataInicio: filtroAtivo.dataInicio ? converterDataParaString(filtroAtivo.dataInicio) : '',
       dataFim: filtroAtivo.dataFim ? converterDataParaString(filtroAtivo.dataFim) : '',
+      mesIda: filtroAtivo.mesAnoIda ? filtroAtivo.mesAnoIda.format('MM') : '',
+      anoIda: filtroAtivo.mesAnoIda ? filtroAtivo.mesAnoIda.format('YYYY') : '',
+      dataIda: filtroAtivo.dataIda ? converterDataParaString(filtroAtivo.dataIda) : '',
     };
 
     console.log("Aplicando filtros:", filtrosParaAplicar);
@@ -168,7 +198,9 @@ const FiltrosOfertas = ({ onFiltrar, filtros, loading = false }) => {
       faixaPreco: [0, 50000],
       conexoes: '',
       dataInicio: null,
-      dataFim: null
+      dataFim: null,
+      mesAnoIda: null,
+      dataIda: null
     });
     onFiltrar({});
   };
@@ -464,7 +496,41 @@ const FiltrosOfertas = ({ onFiltrar, filtros, loading = false }) => {
           </Grid>
         </Box>
       </Box>
-
+      {/* NOVO: Filtro de Data de Ida */}
+      <Box sx={{ mt: 3 }}>
+        <Typography variant="subtitle2" gutterBottom display="flex" alignItems="center">
+          <EventIcon fontSize="small" sx={{ mr: 1, opacity: 0.7 }} />
+          Filtro de Data de Ida
+        </Typography>
+        <Grid container spacing={2} sx={{ mt: 1 }}>
+          <Grid item xs={12} md={6}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="Mês e Ano"
+                value={filtroAtivo.mesAnoIda}
+                onChange={(newValue) => handleChange('mesAnoIda', newValue)}
+                disabled={loading}
+                views={['year', 'month']}
+                slotProps={{
+                  textField: {
+                    size: 'small',
+                    fullWidth: true,
+                    disabled: loading,
+                    InputProps: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <CalendarMonthIcon fontSize="small" sx={{ opacity: 0.7 }} />
+                        </InputAdornment>
+                      )
+                    }
+                  }
+                }}
+                format="MM/YYYY"
+              />
+            </LocalizationProvider>
+          </Grid>
+        </Grid>
+      </Box>
       {/* Exibir chips de filtros ativos */}
       {(filtroAtivo.origem.length > 0 ||
         filtroAtivo.destino.length > 0 ||
@@ -568,6 +634,24 @@ const FiltrosOfertas = ({ onFiltrar, filtros, loading = false }) => {
                 color="primary"
                 variant="outlined"
                 size="small"
+              />
+            )}
+            {filtroAtivo.mesAnoIda && (
+              <Chip
+                label={`Mês/Ano Ida: ${filtroAtivo.mesAnoIda.format('MM/YYYY')}`}
+                onDelete={() => handleChange('mesAnoIda', null)}
+                size="small"
+                color="secondary"
+                variant="outlined"
+              />
+            )}
+            {filtroAtivo.dataIda && (
+              <Chip
+                label={`Data de Ida: ${converterDataParaString(filtroAtivo.dataIda)}`}
+                onDelete={() => handleChange('dataIda', null)}
+                size="small"
+                color="secondary"
+                variant="outlined"
               />
             )}
           </Box>

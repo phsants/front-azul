@@ -100,7 +100,18 @@ export async function fetchHoteis(filtros = {}) {
     if (filtros.dataFim) {
       params.append('data_fim', converterDataParaISO(filtros.dataFim));
     }
-    
+    // Adicionar após os parâmetros existentes
+    if (filtros.mesIda) {
+      params.append('mes_ida', filtros.mesIda);
+    }
+
+    if (filtros.anoIda) {
+      params.append('ano_ida', filtros.anoIda);
+    }
+
+    if (filtros.dataIda) {
+      params.append('data_ida', converterDataParaISO(filtros.dataIda));
+    }
     // Construir endpoint com query params
     const endpoint = `${API_BASE_URL}${API_HOTEIS_ENDPOINT}${params.toString() ? '?' + params.toString() : ''}`;
     const response = await fetch(endpoint, {
@@ -137,7 +148,9 @@ export async function fetchHoteis(filtros = {}) {
         preco_total_numerico: precoTotalNumerico, // Valor numérico para ordenação e filtros
         preco_por_pessoa: formatarPreco(hotel.preco_por_pessoa),
         preco_pessoa_numerico: precoPorPessoaNumerico, // Valor numérico para ordenação e filtros
-        data_pesquisa: formatarData(hotel.data_pesquisa)
+        data_pesquisa: formatarData(hotel.data_pesquisa),
+        conexoes: hotel.conexoes,
+        tipo_conexao: hotel.tipo_conexao
       };
     });
     console.log('Hoteis formatados:', hoteisFormatados);
@@ -153,17 +166,6 @@ export async function fetchHoteis(filtros = {}) {
     //  });
     //}
     // Enriquecer hotéis com quantidade de conexões (fetchDetalhesVoo por id_execucao)
-    for (const hotel of hoteisFormatados) {
-      try {
-        const vooData = await fetchDetalhesVoo(hotel.id_execucao); // <-- Aqui você está buscando os voos
-        hotel.conexoes = contarConexoes(vooData); // <-- Aqui você está contando as conexões
-        hotel.tipo_conexao = hotel.conexoes === 0 ? 'Direto' : 'Com Conexão'; // <-- E classificando
-      } catch (err) {
-        console.error(`Erro ao contar conexões para hotel ${hotel.nome_hotel}`, err);
-        hotel.conexoes = 0;
-        hotel.tipo_conexao = 'Desconhecido';
-      }
-    }
 
     return hoteisFormatados;
   } catch (error) {
@@ -320,7 +322,27 @@ export function filtrarHoteisLocalmente(hoteis, filtros) {
         return false;
       }
     }
+    // Filtrar por mês e ano de ida
+    if (filtros.mesIda && filtros.anoIda) {
+      const dataIda = new Date(hotel.data_ida.split('/').reverse().join('-'));
+      const mesIda = dataIda.getMonth() + 1; // getMonth() retorna 0-11, precisamos 1-12
+      const anoIda = dataIda.getFullYear();
 
+      if (mesIda !== parseInt(filtros.mesIda) || anoIda !== parseInt(filtros.anoIda)) {
+        return false;
+      }
+    }
+
+    // Filtrar por data específica de ida
+    if (filtros.dataIda) {
+      const dataIdaHotel = new Date(hotel.data_ida.split('/').reverse().join('-'));
+      const dataIdaFiltro = new Date(filtros.dataIda.split('/').reverse().join('-'));
+
+      // Comparar apenas a data (ignorar horário)
+      if (dataIdaHotel.toDateString() !== dataIdaFiltro.toDateString()) {
+        return false;
+      }
+    }
     if (filtros.conexoes === 'Direto' && hotel.conexoes > 0) {
       return false;
     }

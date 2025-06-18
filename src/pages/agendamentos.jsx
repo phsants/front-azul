@@ -334,12 +334,6 @@ function ModalEditar({ pesquisa, aberto, fechar, showToast }) {
         const data = response.data.data;
         setForm({
           cliente_nome: data.pesquisa.cliente_nome || '',
-          origens: data.origensDestinos?.map(od => ({ nome: od.origem })) || [{ id: '', nome: '' }],
-          destinos: data.origensDestinos?.map(od => ({
-            nome: od.destino,
-            hotel: od.nome_hotel || '',
-            hotel_por_preco: od.hotel_por_preco
-          })) || [{ id: '', nome: '', hotel: '', hotel_por_preco: true }],
           meses_selecionados: data.pesquisa.meses_selecionados || [],
           tipo_periodo: data.pesquisa.tipo_periodo || '',
           dia_especifico: data.pesquisa.dia_especifico || '',
@@ -432,8 +426,8 @@ function ModalEditar({ pesquisa, aberto, fechar, showToast }) {
               onChange={(e) => setForm({ ...form, cliente_nome: e.target.value })}
             />
 
-            <CamposDinamicos form={form} setForm={setForm} field="origens" label="Saindo de" />
-            <CamposDinamicos form={form} setForm={setForm} field="destinos" label="Destino" />
+            {/* <CamposDinamicos form={form} setForm={setForm} field="origens" label="Saindo de" /> */}
+            {/* <CamposDinamicos form={form} setForm={setForm} field="destinos" label="Destino" /> */}
             <MesesSelecao form={form} setForm={setForm} />
             <PeriodoPesquisa form={form} setForm={setForm} />
             <HospedagemSelecao form={form} setForm={setForm} />
