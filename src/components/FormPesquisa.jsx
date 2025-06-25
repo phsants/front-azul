@@ -101,7 +101,7 @@ function FormPesquisa({ form, setForm }) {
       form.bebes = (typeof form.bebes === 'number' && form.bebes >= 0) ? form.bebes : 0;
       form.adultos = (typeof form.adultos === 'number' && form.adultos >= 1) ? form.adultos : 2;
       // Usando apiFetch igual ao componente antigo
-      await apiFetch("http://localhost:5000/api/pesquisas", {
+      await apiFetch("https://api.usegroup.com.br/api/pesquisas", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

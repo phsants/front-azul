@@ -51,7 +51,7 @@ function CamposDinamicos({ form, setForm, field, label }) {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("Usuário não autenticado");
 
-        const response = await fetch("http://localhost:5000/api/cidades", {
+        const response = await fetch("https://api.usegroup.com.br/api/cidades", {
           headers: { Authorization: `Bearer ${token}` }
         });
 

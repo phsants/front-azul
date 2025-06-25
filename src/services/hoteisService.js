@@ -1,7 +1,7 @@
 import { formatarData, formatarPreco, formatarNomeHotel, mapearTipoQuarto } from '../utils/formatters';
 import dayjs from 'dayjs';
 // URL base da API de hotéis (sem o domínio, apenas o path)
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = 'https://api.usegroup.com.br';
 const API_HOTEIS_ENDPOINT = '/api/hoteis';
 const API_VOOS_ENDPOINT = '/api/voos';
 

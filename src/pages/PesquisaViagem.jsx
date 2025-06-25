@@ -13,13 +13,19 @@ function PesquisaViagem() {
     cliente_nome: "",
     adultos: 2,
     criancas: 0,
-    idadesCriancas: [],
-    origens: [""],
-    destinos: [""],
+    idades_criancas: [],
+    bebes: 0,
+    idades_bebes: [],
+    origens: [{ id: "", nome: "" }],
+    destinos: [{ id: "", nome: "", hotel: "", hotel_por_preco: true }],
     meses_selecionados: [],
-    conexao: "direto",
-    qtdConexoes: 0,
-    preferenciaVoo: "rapido",
+    tipo_periodo: "",
+    dia_especifico: "",
+    dias_semana: [],
+    noites_min: 1,
+    noites_max: 1,
+    apartamento: 1,
+    tipo_voo: "Mais Barato"
   });
   const theme = useTheme();
 

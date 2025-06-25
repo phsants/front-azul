@@ -72,7 +72,7 @@ export default function TelaAgendamentos() {
 
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:5000/api/pesquisas", {
+      const response = await axios.get("https://api.usegroup.com.br/api/pesquisas", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -112,7 +112,7 @@ export default function TelaAgendamentos() {
 
     setLoading(true);
     try {
-      await axios.delete(`http://localhost:5000/api/pesquisa/${id}`, {
+      await axios.delete(`https://api.usegroup.com.br/api/pesquisa/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -327,7 +327,7 @@ function ModalEditar({ pesquisa, aberto, fechar, showToast }) {
       }
 
       try {
-        const response = await axios.get(`http://localhost:5000/api/pesquisa/${pesquisa.id}`, {
+        const response = await axios.get(`https://api.usegroup.com.br/api/pesquisa/${pesquisa.id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -371,7 +371,7 @@ function ModalEditar({ pesquisa, aberto, fechar, showToast }) {
 
     setLoading(true);
     try {
-      await axios.put(`http://localhost:5000/api/pesquisa/${pesquisa.id}`, form, {
+      await axios.put(`https://api.usegroup.com.br/api/pesquisa/${pesquisa.id}`, form, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -484,7 +484,7 @@ function ModalAgendamento({ pesquisa, aberto, fechar, showToast }) {
 
       setLoading(true);
       try {
-        const response = await axios.get(`http://localhost:5000/api/pesquisa/${pesquisa.id}`, {
+        const response = await axios.get(`https://api.usegroup.com.br/api/pesquisa/${pesquisa.id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -515,7 +515,7 @@ function ModalAgendamento({ pesquisa, aberto, fechar, showToast }) {
 
     setLoading(true);
     try {
-      await axios.post(`http://localhost:5000/api/pesquisa/${pesquisa.id}/agendamento`, {
+      await axios.post(`https://api.usegroup.com.br/api/pesquisa/${pesquisa.id}/agendamento`, {
         dias_semana: diasSemana,
         horarios,
         frequencia,

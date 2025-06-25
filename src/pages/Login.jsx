@@ -50,7 +50,7 @@ function Login() {
       
       // Tenta autenticar com a API real
       try {
-        const apiUrl = import.meta.env.VITE_API_BASE_URL || 'https://api-pacotes-manus.herokuapp.com';
+        const apiUrl = import.meta.env.VITE_API_BASE_URL;
         const response = await fetch(`${apiUrl}/login`, {
           method: 'POST',
           headers: {
