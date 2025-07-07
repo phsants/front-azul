@@ -77,7 +77,11 @@ export default function TelaAgendamentos() {
       });
 
       if (response.data.success) {
-        setPesquisas(response.data.data);
+        const withOrigens = response.data.data.map(p => ({
+          ...p,
+          origensDestinos: p.origensDestinos ?? []  // garante array mesmo que não venha
+        }));
+        setPesquisas(withOrigens);
       } else {
         showToast("Erro ao buscar pesquisas", "error");
       }
@@ -219,6 +223,17 @@ export default function TelaAgendamentos() {
                       <Typography variant="body2" color="text.secondary" gutterBottom>
                         <strong>Tipo Período:</strong> {pesquisa.tipo_periodo}
                       </Typography>
+                      {(pesquisa.origensDestinos ?? []).map((od, i) => (
+                          <Typography key={i} variant="body2" color="text.secondary" gutterBottom>
+                            <strong>Cidades:</strong> {od.origem} → {od.destino}
+                            {od.nome_hotel ? ` (hotel: ${od.nome_hotel})` : ''}
+                          </Typography>
+                      ))}
+
+
+                      <Typography variant="body2" color="text.secondary" gutterBottom>
+                        <strong>Noites:</strong> {pesquisa.noites_min} à {pesquisa.noites_max}
+                      </Typography>                      
 
                       <Typography variant="body2" color="text.secondary" gutterBottom>
                         <strong>Apartamentos:</strong> {pesquisa.apartamento}

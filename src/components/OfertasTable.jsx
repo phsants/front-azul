@@ -159,10 +159,15 @@ const OfertasTable = ({ ofertas, loading = false, filtros = {} }) => {
   const handleExportarExcel = () => {
     // Preparar os dados para exportação
     const dadosParaExportar = ofertasOrdenadasFiltradas.map(oferta => ({
+      'Cliente': oferta.cliente_nome,
       'Origem': oferta.origem,
       'Destino': oferta.destino,
       'Data Ida': oferta.data_ida,
       'Data Volta': oferta.data_volta,
+      'Noites': oferta.noites,
+      'Adultos': oferta.adultos,
+      'Crianças': oferta.criancas,
+      'Bebês': oferta.bebes,
       'Nome do Hotel': oferta.nome_hotel,
       'Tipo de Quarto': oferta.tipo_quarto,
       'Refeição': oferta.refeicao || 'Não informado',
@@ -197,10 +202,15 @@ const OfertasTable = ({ ofertas, loading = false, filtros = {} }) => {
     
     // Preparar os dados para a tabela
     const dadosTabela = ofertasOrdenadasFiltradas.map(oferta => [
+      oferta.cliente_nome,
       oferta.origem,
       oferta.destino,
       oferta.data_ida,
       oferta.data_volta,
+      oferta.noites,
+      oferta.adultos,
+      oferta.criancas,
+      oferta.bebes,
       oferta.nome_hotel,
       oferta.tipo_quarto,
       oferta.refeicao || 'Não informado',
@@ -211,10 +221,15 @@ const OfertasTable = ({ ofertas, loading = false, filtros = {} }) => {
     
     // Definir cabeçalhos da tabela
     const cabecalhos = [
-      'Origem', 
+      'Cliente',
+      'Origem',
       'Destino', 
       'Data Ida', 
-      'Data Volta', 
+      'Data Volta',
+      'Noites',
+      'Adultos',
+      'Crianças',
+      'Bebês',
       'Nome do Hotel', 
       'Tipo Quarto', 
       'Refeição', 
@@ -341,10 +356,15 @@ const OfertasTable = ({ ofertas, loading = false, filtros = {} }) => {
             <Table stickyHeader aria-label="tabela de ofertas">
               <TableHead>
                 <TableRow>
+                  <TableCell>Cliente</TableCell>
                   <TableCell>Origem</TableCell>
                   <TableCell>Destino</TableCell>
                   <TableCell>Data Ida</TableCell>
                   <TableCell>Data Volta</TableCell>
+                  <TableCell>Noites</TableCell>
+                  <TableCell>Adultos</TableCell>
+                  <TableCell>Crianças</TableCell>
+                  <TableCell>Bebês</TableCell>
                   <TableCell>Hotel</TableCell>
                   <TableCell>Tipo Quarto</TableCell>
                   <TableCell>Refeição</TableCell>
@@ -373,10 +393,15 @@ const OfertasTable = ({ ofertas, loading = false, filtros = {} }) => {
                       transition: 'background-color 0.2s'
                     }}
                   >
+                    <TableCell>{oferta.cliente_nome}</TableCell>
                     <TableCell>{oferta.origem}</TableCell>
                     <TableCell>{oferta.destino}</TableCell>
                     <TableCell>{oferta.data_ida}</TableCell>
                     <TableCell>{oferta.data_volta}</TableCell>
+                    <TableCell>{oferta.noites}</TableCell>
+                    <TableCell>{oferta.adultos}</TableCell>
+                    <TableCell>{oferta.criancas}</TableCell>
+                    <TableCell>{oferta.bebes}</TableCell>
                     <TableCell>
                       <Tooltip title={oferta.nome_hotel}>
                         <span>{oferta.nome_hotel}</span>
@@ -404,7 +429,7 @@ const OfertasTable = ({ ofertas, loading = false, filtros = {} }) => {
             </Table>
           </TableContainer>
           <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
+            rowsPerPageOptions={[5, 10, 25, 50, 100]}
             component="div"
             count={ofertasFiltradas.length}
             rowsPerPage={rowsPerPage}
@@ -430,3 +455,4 @@ const OfertasTable = ({ ofertas, loading = false, filtros = {} }) => {
 };
 
 export default OfertasTable;
+

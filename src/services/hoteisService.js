@@ -112,6 +112,12 @@ export async function fetchHoteis(filtros = {}) {
     if (filtros.dataIda) {
       params.append('data_ida', converterDataParaISO(filtros.dataIda));
     }
+    if (filtros.noites && filtros.noites.length > 0) {
+      filtros.noites.forEach((n) => {
+        params.append('noites', n);
+      });
+    }
+
     // Construir endpoint com query params
     const endpoint = `${API_BASE_URL}${API_HOTEIS_ENDPOINT}${params.toString() ? '?' + params.toString() : ''}`;
     const response = await fetch(endpoint, {
@@ -137,6 +143,11 @@ export async function fetchHoteis(filtros = {}) {
       return {
         id: hotel.id || `hotel-${Math.random().toString(36).substr(2, 9)}`,
         id_execucao: hotel.id_execucao,
+        cliente_nome: hotel.cliente_nome || '',
+        adultos: hotel.adultos != null ? hotel.adultos : 0,
+        criancas: hotel.criancas != null ? hotel.criancas : 0,
+        bebes: hotel.bebes != null ? hotel.bebes : 0,
+        noites: hotel.noites != null ? hotel.noites : 0,
         origem: hotel.origem || 'Não informado',
         destino: hotel.destino || 'Não informado',
         data_ida: formatarData(hotel.data_ida),
@@ -526,3 +537,4 @@ function calcularTaxaConversao(hoteis) {
   // Simulação de taxa de conversão (entre 2% e 5%)
   return 2 + Math.random() * 3;
 }
+

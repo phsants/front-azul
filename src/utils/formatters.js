@@ -12,25 +12,14 @@ export const formatarData = (data, fallback = "Não informado") => {
   if (!data) return fallback;
   
   try {
-    // Se for string no formato DD/MM/AAAA, retorna como está
-    if (typeof data === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(data)) {
-      return data;
-    }
-    
-    // Tenta converter para Date
-    const dataObj = typeof data === 'string' ? new Date(data) : data;
-    
-    // Verifica se é uma data válida
-    if (isNaN(dataObj.getTime())) {
-      return fallback;
-    }
-    
-    // Formata para DD/MM/AAAA
-    return dataObj.toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
+    const dataObj = new Date(data);
+
+    // Usa valores UTC para evitar mudança de fuso horário
+    const dia = String(dataObj.getUTCDate()).padStart(2, '0');
+    const mes = String(dataObj.getUTCMonth() + 1).padStart(2, '0');
+    const ano = dataObj.getUTCFullYear();
+
+    return `${dia}/${mes}/${ano}`;
   } catch (error) {
     console.error('Erro ao formatar data:', error);
     return fallback;

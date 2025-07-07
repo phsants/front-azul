@@ -39,7 +39,8 @@ const FiltrosOfertas = ({ onFiltrar, filtros, loading = false }) => {
     dataInicio: null,
     dataFim: null,
     mesAnoIda: null,     // Seletor de mês/ano
-    dataIda: null
+    dataIda: null,
+    noites: []
   });
 
   // Estado para os inputs de preço
@@ -182,6 +183,7 @@ const FiltrosOfertas = ({ onFiltrar, filtros, loading = false }) => {
       mesIda: filtroAtivo.mesAnoIda ? filtroAtivo.mesAnoIda.format('MM') : '',
       anoIda: filtroAtivo.mesAnoIda ? filtroAtivo.mesAnoIda.format('YYYY') : '',
       dataIda: filtroAtivo.dataIda ? converterDataParaString(filtroAtivo.dataIda) : '',
+      noites: filtroAtivo.noites,
     };
 
     console.log("Aplicando filtros:", filtrosParaAplicar);
@@ -529,8 +531,53 @@ const FiltrosOfertas = ({ onFiltrar, filtros, loading = false }) => {
               />
             </LocalizationProvider>
           </Grid>
+
+          <Grid item xs={12} md={6}>
+              <Autocomplete
+                multiple
+                id="noites-autocomplete"
+                options={[1,2,3,4,5,6,7,8,9,10]}
+                getOptionLabel={(option) => option.toString()}
+                value={filtroAtivo.noites}
+                onChange={(e, newValue) => handleChange('noites', newValue)}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Noites"
+                    size="small"
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: (
+                        <>
+                          <HotelIcon fontSize="small" sx={{ mr: 1, opacity: 0.7 }} />
+                          {params.InputProps.startAdornment}
+                        </>
+                      )
+                    }}
+                  />
+                )}
+                renderTags={(value, getTagProps) =>
+                  value.map((option, index) => {
+                    const tagProps = getTagProps({ index });
+                    const { key, ...restTagProps } = tagProps;
+                    return (
+                      <Chip
+                        key={key}
+                        variant="outlined"
+                        label={`${option} noites`}
+                        size="small"
+                        {...restTagProps}
+                      />
+                    );
+                  })
+                }
+                noOptionsText="Selecione o número de noites"
+              />
+          </Grid>
+
         </Grid>
       </Box>
+
       {/* Exibir chips de filtros ativos */}
       {(filtroAtivo.origem.length > 0 ||
         filtroAtivo.destino.length > 0 ||
@@ -539,6 +586,7 @@ const FiltrosOfertas = ({ onFiltrar, filtros, loading = false }) => {
         filtroAtivo.dataInicio ||
         filtroAtivo.dataFim ||
         filtroAtivo.mesAnoIda ||
+        filtroAtivo.noites ||
         precoMinimo > 0 ||
         precoMaximo < 50000) && (
         <Box sx={{ mt: 3 }}>
@@ -655,6 +703,22 @@ const FiltrosOfertas = ({ onFiltrar, filtros, loading = false }) => {
                 variant="outlined"
               />
             )}
+            {filtroAtivo.noites.length > 0 &&
+              filtroAtivo.noites.map((noite, index) => (
+                <Chip
+                  key={`noite-${index}`}
+                  label={`${noite} noite${noite > 1 ? 's' : ''}`}
+                  onDelete={() => {
+                    const novasNoites = [...filtroAtivo.noites];
+                    novasNoites.splice(index, 1);
+                    handleChange('noites', novasNoites);
+                  }}
+                  color="primary"
+                  variant="outlined"
+                  size="small"
+                />
+              ))
+            }
           </Box>
         </Box>
       )}
@@ -663,3 +727,4 @@ const FiltrosOfertas = ({ onFiltrar, filtros, loading = false }) => {
 };
 
 export default FiltrosOfertas;
+
